@@ -38,3 +38,19 @@ body {
     display: flex;
     justify-content: space-between;
 }
+
+.container-score {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    gap: 20px;
+}
+
+.container-high-score {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    gap: 20px;
+}

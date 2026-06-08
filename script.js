@@ -7,18 +7,35 @@ let snake = [
 let food = { x: 100, y: 100 };
 let direction = 'RIGHT';
 let gameInterval; 
+let isGameOver = false;
+let score = 0;
+let highScore = 0; 
+
 
 const canvas = document.getElementById('board');
 const ctx = canvas.getContext('2d');
+
 const speedMilliS = 100;
 const boxSize = 20;
 
-let isGameOver = false;
+const scoreElement = document.getElementById('score');
+const highScoreElement = document.getElementById('high-score');
 
 
 function resetVar() {
 
-    
+    snake = [
+    { x: 200, y: 200 }, // Index 0 : The head
+    { x: 180, y: 200 }, // Index 1: A piece of the body 
+    { x: 160, y: 200 },  // Index 2: The tail 
+
+    ];
+
+    direction = 'RIGHT';
+    isGameOver = false;
+    score = 0;
+    scoreElement.textContent = score;
+
     
 }
 
@@ -36,6 +53,15 @@ function drawBoard(){
     snake.forEach(body => {
         ctx.fillRect(body.x,body.y,boxSize,boxSize);
     });
+
+    if (isGameOver) {
+        
+        ctx.font = " bold 30px Arial"
+        ctx.fillStyle = 'black'
+        ctx.textAlign = "center"
+        ctx.fillText("GAME OVER", 200, 200);
+
+    }
 
 };
 
@@ -58,7 +84,14 @@ addEventListener('keydown', function(event) {
     } else if (event.key === 'ArrowDown' && direction != 'UP') {
         console.log('Down arrow pressed');
         direction = 'DOWN';
-    }
+    } else if (event.key === 'Enter' && isGameOver ||
+        event.key === ' ' && isGameOver){
+        
+        event.preventDefault;
+
+        resetVar();
+        gameInterval = setInterval(gameLoop,speedMilliS);
+    } 
 
 });
 
@@ -103,6 +136,8 @@ function moveSnake(){
     if (newHead.x === food.x && newHead.y === food.y ) {
         
         console.log("I'm eating")
+        score++; 
+        scoreElement.textContent = score;
         foodRandomGenerator(); 
 
     } else{
@@ -118,8 +153,9 @@ function moveSnake(){
 function gameLoop() {
    
     moveSnake(); 
-    drawBoard(); 
     gameOver();
+    drawBoard(); 
+
 
 
 }
@@ -160,6 +196,12 @@ function gameOver() {
         
        clearInterval(gameInterval);
 
+       if (score > highScore) {
+        
+            highScore = score; 
+            highScoreElement.textContent = highScore;
+
+       }
         isGameOver = true;
 
 
@@ -179,10 +221,6 @@ function gameOver() {
             isGameOver = true;
 
         } 
-
     });
-
-
-
 }
 
