@@ -216,6 +216,13 @@ function gameOver() {
 
             clearInterval(gameInterval);
 
+            if (score > highScore) {
+
+            highScore = score; 
+            highScoreElement.textContent = highScore;
+
+            }
+
             isGameOver = true;
 
         } 
