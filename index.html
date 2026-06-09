@@ -1,34 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Snake Game</title>
     <link rel="stylesheet" href="style.css">
-    <script src="script.js" defer></script>
+    <script src="script.js" defer></script> 
 </head>
-
 <body>
-
-    <div class="wrapper">
-
-        <div class="game-details">
-            <div class="container-score">
-            <span class="score">SCORE </span>
-            <div class="score" id="score" > 0</div>
+    <div class="game-container">
+        <div class="scoreboard">
+            <div class="score-box">
+                <span>Puntos:</span>
+                <span id="score">0</span> 
             </div>
-            <div class="container-high-score">
-            <div class="high-score">HIGH SCORE</div>
-            <div class="high-score" id="high-score"> 0</div>
+            <div class="score-box">
+                <span>Récord:</span>
+                <span id="high-score">0</span> 
             </div>
         </div>
-        <div class="play-board">
-            <canvas id="board" width="400" height="400"></canvas>
-        </div>
+        
+        <canvas id="board"></canvas>
+        
+        <p class="controls-hint">Usa las flechas para moverte y 'Enter' para reiniciar</p>
     </div>
-
-
 </body>
-
 </html>
