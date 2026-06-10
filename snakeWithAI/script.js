@@ -268,7 +268,7 @@ function calculatePath() {
   return [];
 }
 
-//rebuild de safe path from the end to the start. 
+//rebuild the safe path from the end to the start. 
 function rebuildRoute(recordSteps, food) {
     
     let finalRoute = []; 

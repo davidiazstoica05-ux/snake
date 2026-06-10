@@ -1,4 +1,0 @@
-Snake Mejorar Ideas
-
-Que un modelo de IA juegue al snake. 
-Un modelo de IA generativa sea la que mueve la serpiente y otro modelo de IA generativa sea la que coloca las frutas. De está forma se enfrentan	
