@@ -252,6 +252,7 @@ function getValidNeighbors(currentBox){
     return !isWall && !isBody;
 
     }); 
+
     return validMoves;
 
 }
@@ -357,14 +358,42 @@ function setAIDirection(target) {
 
     } else {
         
-        console.log("I've accepted my death");
+        let options = getValidNeighbors(snake[0]);
+
+        let bestOption = checkDistance(options);
+
+        let direction = bestOption.dir;        
         
+
     }
 }
 
 
+function checkDistance(validMoves) {
+    
+    let largerDistance = -1;
+    let bestMove; 
+    console.log(bestMove);
+    
+    console.table(validMoves)
 
+    validMoves.forEach( box => {
+        
+        let distancia = Math.abs(food.x - box.x) + Math.abs(food.y - box.y);
 
+        if ( largerDistance < distancia  ) {
+
+            bestMove = validMove; 
+
+            largerDistance = distancia;
+
+        }
+
+    });
+
+    return bestMove;
+
+}
 
 
 
