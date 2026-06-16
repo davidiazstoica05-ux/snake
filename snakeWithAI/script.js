@@ -19,9 +19,9 @@ canvas.height= responsiveBoard;
 const boxSize = Math.floor(responsiveBoard/20) ;
 
 let snake = [
-    { x: boxSize * 10 , y: boxSize * 10 }, // Index 0 : The head
-    { x: boxSize * 9, y: boxSize * 10 }, // Index 1: A piece of the body 
-    { x: boxSize * 8, y: boxSize * 10 },  // Index 2: The tail 
+    { x: boxSize * 10 , y: boxSize * 10 }, // Index 0: The head
+    { x: boxSize * 9, y: boxSize * 10 },   // Index 1: A piece of the body 
+    { x: boxSize * 8, y: boxSize * 10 },   // Index 2: The tail 
 ];
 let food = { x: boxSize * 15, y: boxSize * 15 };
 let direction = 'RIGHT';
@@ -45,7 +45,7 @@ function resetVar() {
     scoreElement.textContent = score;
 }
 
-//Paint the board 
+// Paint the board 
 function drawBoard(){
 
     ctx.fillStyle = '#9bbc0f';      
@@ -70,9 +70,7 @@ function drawBoard(){
 
 };
 
-
-//Control
-
+// Control
 addEventListener("keydown", function (event) {
  if (event.key === 'Enter' && isGameOver ||
         event.key === ' ' && isGameOver){
@@ -82,43 +80,29 @@ addEventListener("keydown", function (event) {
     };
 });
 
-
-//Logic of the game 
+// Logic of the game 
 function moveSnake(){
 
     let newHead;
 
     switch (direction) {
         case 'RIGHT':
-            newHead = {
-                x : snake[0].x + boxSize,
-                y: snake[0].y
-            };
+            newHead = { x : snake[0].x + boxSize, y: snake[0].y };
             break;
         case 'LEFT':
-            newHead = {
-                x : snake[0].x - boxSize,
-                y: snake[0].y
-            };
+            newHead = { x : snake[0].x - boxSize, y: snake[0].y };
             break;
         case 'UP':
-            newHead = {
-                x : snake[0].x,
-                y: snake[0].y - boxSize 
-            };
+            newHead = { x : snake[0].x, y: snake[0].y - boxSize };
             break;
         case 'DOWN':
-            newHead = {
-                x : snake[0].x ,
-                y: snake[0].y + boxSize
-            };
+            newHead = { x : snake[0].x , y: snake[0].y + boxSize };
             break;
         default:
             break;
     };  
-
            
-    snake.unshift(newHead);//save a new head to the front of the array  
+    snake.unshift(newHead); // Add the new head to the front of the array to move forward
 
     if (newHead.x === food.x && newHead.y === food.y ) {
         
@@ -128,8 +112,8 @@ function moveSnake(){
         foodRandomGenerator(); 
 
     } else{
-
-    snake.pop();
+        
+        snake.pop(); // Remove the tail if it hasn't eaten, maintaining the current length
 
     }
 
@@ -137,15 +121,15 @@ function moveSnake(){
 
 function gameLoop() {
 
-    setAIDirection(food);
+    setAIDirection(food); // The AI engine starts here, setting the food as the main target
     moveSnake(); 
     gameOver();
     drawBoard(); 
 
 }
 
-/* Works like a metronome, repeating the function every 100 milliseconds. 
-As opposed to setTimeout() which only executes once*/
+ /* Works like a metronome, repeating the function every 100 milliseconds.
+As opposed to setTimeout() which only executes once*/ 
 gameInterval = setInterval(gameLoop, speedMilliS);
 
 function foodRandomGenerator() {
@@ -160,7 +144,6 @@ function foodRandomGenerator() {
         randomNumberX = randomNumberX * round;
         randomNumberX = Math.floor(randomNumberX);
 
-        // Lanzamos los dados para la Y
         let randomNumberY = Math.random();
         randomNumberY = randomNumberY * round;
         randomNumberY = Math.floor(randomNumberY);
@@ -170,6 +153,7 @@ function foodRandomGenerator() {
             y: randomNumberY * boxSize 
         };
 
+        // Ensure the new food doesn't spawn on top of the snake's body
         busyCoordinate = snake.some(body => 
             body.x === newFood.x && body.y === newFood.y
         );
@@ -221,16 +205,14 @@ function gameOver() {
     });
 }
 
-//Rule 1: 
 
-//AI working with BFS's Alghoritm. 
+//ARTIFICIAL INTELLIGENCE
 
-//Valid the neighboors boxes 
+
 function getValidNeighbors(currentBox){
 
     let head = currentBox;
 
-    //look for all the posible moves de head can do 
     const possibleMoves = [
         { x: head.x, y: head.y - boxSize, dir: 'UP' },
         { x: head.x, y: head.y + boxSize, dir: 'DOWN' },
@@ -238,37 +220,33 @@ function getValidNeighbors(currentBox){
         { x: head.x + boxSize, y: head.y, dir: 'RIGHT' }
     ];
 
-    
     const validMoves = possibleMoves.filter(move => {
 
         const isWall = move.x < 0 || move.x >= canvas.width || 
                        move.y < 0 || move.y >= canvas.height;
 
+        // slice(0, -1) ignores the tip of the tail because that box will be free next turn
         const isBody = snake.slice(0, -1).some(bodyPart => 
             bodyPart.x === move.x && bodyPart.y === move.y
-);
+        );
 
-
-    return !isWall && !isBody;
+        return !isWall && !isBody;
 
     }); 
 
     return validMoves;
-
 }
 
-//Calculate the shortest path to eat the apple 
+// Breadth-First Search (BFS): Floods the map level by level to mathematically find the shortest path
 function calculatePath(target) {
   const start = snake[0];
 
-  //QUEUE
   let boxesToExplore = [];
   boxesToExplore.push(start);
 
   let recordSteps = new Map();
   let startKey = `${start.x},${start.y}`;
     
-  //It's the first step, so doesn't have any previous step 
   recordSteps.set(startKey, null);
 
   while (boxesToExplore.length > 0) {
@@ -283,20 +261,17 @@ function calculatePath(target) {
     for (let neighbor of neighbors) {
       let neighborKey = `${neighbor.x},${neighbor.y}`;
 
-      
       if (!recordSteps.has(neighborKey)) {
         boxesToExplore.push(neighbor);
         recordSteps.set(neighborKey, currentBox);
       }
     }
-
   }
 
-  //If the loop has finished that means doesn't exist route to eat the apple 
-  return [];
+  return []; // If it returns empty, it means the target is blocked
 }
 
-//rebuild the safe path from the end to the start. 
+// Backtracks the step map (from target to start) to build the final route array
 function rebuildRoute(recordSteps, target) {
     
     let finalRoute = []; 
@@ -305,101 +280,79 @@ function rebuildRoute(recordSteps, target) {
     while (currentBox !== null) {
         
         finalRoute.push(currentBox)
-
         let currentKey = `${currentBox.x},${currentBox.y}`;
-
         currentBox = recordSteps.get(currentKey);
 
     }
 
-    //reverse it. Finally we have the shortest route
     finalRoute.reverse();
-
     return finalRoute;
-
 }
 
 function setAIDirection(target) {
     
     let route = calculatePath(target); 
 
+    // Plan A: We have a valid route to the target. Deduce which way to steer.
     if (route.length > 1) {
         
+
+        console.log("PLAN A")
 
         let currentPosition = route[0]; 
         let nextStep = route[1]; 
 
-
         if (nextStep.x > currentPosition.x) {
-            
-
             direction = "RIGHT"; 
-
         } else if (nextStep.x < currentPosition.x) {
-            
             direction = "LEFT"; 
-
         } else if (nextStep.y > currentPosition.y) {
-            
             direction = "DOWN";
-
-
         } else if (nextStep.y < currentPosition.y) {
-            
-
             direction = "UP";
-
         }
 
-   } else if (target.x === food.x && target.y === food.y) {
+    // Plan B: If the path to the food is blocked, chase the tail instead. (Recursive base case)
+    } else if (target.x === food.x && target.y === food.y) {
         
+        console.log("PLAN B")
+
         let snakeTail = snake[snake.length - 1];
         setAIDirection(snakeTail);
 
+    // Plan C: If the tail is also blocked, make safe moves to gain time.   
     } else {
+
+        console.log("PLAN C")
         
         let options = getValidNeighbors(snake[0]);
-
         let bestOption = checkDistance(options);
-
-        let direction = bestOption.dir;        
         
+        if(bestOption) {
+            direction = bestOption.dir;     
+        }
 
     }
 }
 
-
+// Manhattan Distance: Finds the box that is FURTHEST from the food to take a detour and survive
 function checkDistance(validMoves) {
     
     let largerDistance = -1;
     let bestMove; 
-    console.log(bestMove);
-    
-    console.table(validMoves)
 
     validMoves.forEach( box => {
-        
+
         let distancia = Math.abs(food.x - box.x) + Math.abs(food.y - box.y);
 
         if ( largerDistance < distancia  ) {
 
-            bestMove = validMove; 
-
+            bestMove = box; 
             largerDistance = distancia;
 
         }
 
     });
 
-    return bestMove;
-
+    return bestMove; // Returns the entire object to access its .dir property later
 }
-
-
-
-
-
-
-
-
-
